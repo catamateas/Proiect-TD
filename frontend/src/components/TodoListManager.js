@@ -11,6 +11,7 @@ const TodoListManager = () => {
     const [selectedListId, setSelectedListId] = useState(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
         fetchLists();
@@ -34,9 +35,10 @@ const TodoListManager = () => {
 
     const handleCreateList = async () => {
         if (!newListName.trim()) {
-            toast.error("Don't leave it empty");
+            setErrorMessage("Don't leave it empty");
             return;
         }
+        setErrorMessage('');
         try {
             const response = await axios.post('http://localhost:8080/api/todolists', { name: newListName });
             setLists([...lists, response.data]);
@@ -86,14 +88,17 @@ const TodoListManager = () => {
                 </Col>
                 <Col xs={isSidebarOpen ? 9 : 11}>
                     <h1 className="text-center my-4">Todo List Manager</h1>
-                    <Form inline className="mb-4" onSubmit={(e) => { e.preventDefault(); handleCreateList(); }}>
-                        <Form.Control 
-                            type="text"
-                            className="mr-2"
-                            value={newListName}
-                            onChange={(e) => setNewListName(e.target.value)}
-                            placeholder="New List Name"
-                        />
+                    <Form className="mb-4" onSubmit={(e) => { e.preventDefault(); handleCreateList(); }}>
+                        <Form.Group>
+                            <Form.Control 
+                                type="text"
+                                className="mr-2"
+                                value={newListName}
+                                onChange={(e) => setNewListName(e.target.value)}
+                                placeholder="New List Name"
+                            />
+                            {errorMessage && <Form.Text className="text-danger">{errorMessage}</Form.Text>}
+                        </Form.Group>
                         <Button type="submit" className="mt-2">Create List</Button>
                     </Form>
                     {selectedList && <TodoList list={selectedList} onDelete={handleDeleteList} />}

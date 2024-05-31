@@ -9,7 +9,7 @@ const TodoList = ({ list, onDelete }) => {
 
     useEffect(() => {
         fetchTodos();
-    }, []);
+    }, [list.id]);
 
     const fetchTodos = async () => {
         try {
@@ -30,21 +30,25 @@ const TodoList = ({ list, onDelete }) => {
         setTodos([...todos, newTodo]);
     };
 
-    const updateTodo = (updatedTodo) => {
-        setTodos(todos.map(todo => (todo.id === updatedTodo.id ? updatedTodo : todo)));
+    const updateTodo = async (updatedTodo) => {
+        try {
+            const response = await axios.put(`http://localhost:8080/api/todolists/todos/${updatedTodo.id}`, updatedTodo);
+            setTodos(todos.map(todo => (todo.id === updatedTodo.id ? response.data : todo)));
+        } catch (error) {
+            console.error('Error updating todo:', error);
+        }
     };
 
     const deleteTodo = async (id) => {
         try {
-            await axios.delete(`http://localhost:8080/api/todos/${id}`);
+            await axios.delete(`http://localhost:8080/api/todolists/${list.id}/todos/${id}`);
             setTodos(todos.filter(todo => todo.id !== id));
         } catch (error) {
             console.error('Error deleting todo:', error);
         }
     };
 
-    const handleDeleteList = (e) => {
-        e.stopPropagation(); // Previne propagarea evenimentului de click
+    const handleDeleteList = () => {
         if (window.confirm('Are you sure you want to delete this list?')) {
             onDelete(list.id);
         }

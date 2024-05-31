@@ -1,6 +1,8 @@
 package com.example.todo.model;
 
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -11,7 +13,7 @@ public class TodoList {
     private String name;
 
     @OneToMany(mappedBy = "todoList", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Todo> todos;
+    private List<Todo> todos = new ArrayList<>();
 
     // Getters și Setters
     public Long getId() {

@@ -35,7 +35,6 @@ public class TodoController {
     public Todo updateTodo(@PathVariable Long id, @RequestBody Todo todoDetails) {
         Todo todo = todoRepository.findById(id).orElseThrow();
         todo.setTitle(todoDetails.getTitle());
-        todo.setDescription(todoDetails.getDescription());
         todo.setCompleted(todoDetails.isCompleted());
         return todoRepository.save(todo);
     }

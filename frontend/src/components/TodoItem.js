@@ -4,6 +4,7 @@ import axios from 'axios';
 const TodoItem = ({ todo, onUpdate, onDelete }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [editedTitle, setEditedTitle] = useState(todo.title);
+    const [errorMessage, setErrorMessage] = useState('');
 
     const handleComplete = () => {
         const updatedTodo = { ...todo, completed: !todo.completed };
@@ -25,11 +26,16 @@ const TodoItem = ({ todo, onUpdate, onDelete }) => {
     };
 
     const handleSave = () => {
+        if (!editedTitle.trim()) {
+            setErrorMessage("Don't leave it empty");
+            return;
+        }
         const updatedTodo = { ...todo, title: editedTitle };
         axios.put(`http://localhost:8080/api/todos/${todo.id}`, updatedTodo)
             .then(response => {
                 onUpdate(response.data);
                 setIsEditing(false);
+                setErrorMessage('');
             })
             .catch(error => console.log(error));
     };
@@ -37,6 +43,7 @@ const TodoItem = ({ todo, onUpdate, onDelete }) => {
     const handleCancel = () => {
         setIsEditing(false);
         setEditedTitle(todo.title);
+        setErrorMessage('');
     };
 
     return (
@@ -56,6 +63,7 @@ const TodoItem = ({ todo, onUpdate, onDelete }) => {
                 ) : (
                     <span className="mx-2">{todo.title}</span>
                 )}
+                {isEditing && errorMessage && <span className="text-danger mx-2">{errorMessage}</span>}
             </div>
             <div>
                 {isEditing ? (

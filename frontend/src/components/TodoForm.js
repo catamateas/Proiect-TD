@@ -5,15 +5,17 @@ import { toast } from 'react-toastify';
 
 const TodoForm = ({ listId, onAdd }) => {
     const [title, setTitle] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!title.trim()) {
-            toast.error("Don't leave it empty");
+            setErrorMessage("Don't leave it empty");
             return;
         }
+        setErrorMessage('');
         try {
-            const response = await axios.post(`http://localhost:8080/api/todos/${listId}`, {
+            const response = await axios.post(`http://localhost:8080/api/todolists/${listId}/todos`, {
                 title,
                 completed: false
             });
@@ -35,6 +37,7 @@ const TodoForm = ({ listId, onAdd }) => {
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                 />
+                {errorMessage && <Form.Text className="text-danger">{errorMessage}</Form.Text>}
             </Form.Group>
             <Button type="submit" className="mt-2">Add Todo</Button>
         </Form>
